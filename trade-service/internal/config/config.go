@@ -49,8 +49,8 @@ func Load() *Config {
 		JWTSecret:    "mysecret", // Default JWT secret key
 		ClientId:     "myclientid",
 		ClientSecret: "myclientsecret",
-		AuthUrl:      "http://localhost:8080/auth/token", // Default authentication URL
-		DataUrl:      "http://localhost:8081/data",       // Default data URL
+		AuthUrl:      "http://localhost:8080/auth/token",  // Default authentication URL
+		DataUrl:      "http://localhost:8081/data/lowest", // Default data URL
 	}
 
 	// Override with environment variables if they exist

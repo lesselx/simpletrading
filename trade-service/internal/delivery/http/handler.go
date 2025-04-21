@@ -45,21 +45,21 @@ func (h *Handler) PlaceTrade(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"status": "trade accepted"})
 }
 
-// getLowestPriceFromDataService fetches the lowest price from Data Service API
-func (h *Handler) getLowestPriceFromDataService() (float64, error) {
-	// Request Data Service for the lowest price in the last 24 hours
-	resp, err := http.Get("http://data-service:8081/data/lowest?since=24h")
-	if err != nil {
-		return 0, err
-	}
-	defer resp.Body.Close()
+// // getLowestPriceFromDataService fetches the lowest price from Data Service API
+// func (h *Handler) getLowestPriceFromDataService() (float64, error) {
+// 	// Request Data Service for the lowest price in the last 24 hours
+// 	resp, err := http.Get("http://data-service:8081/data/lowest?since=24h")
+// 	if err != nil {
+// 		return 0, err
+// 	}
+// 	defer resp.Body.Close()
 
-	// Parse response from Data Service
-	var result map[string]float64
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return 0, err
-	}
+// 	// Parse response from Data Service
+// 	var result map[string]float64
+// 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+// 		return 0, err
+// 	}
 
-	// Return the lowest price
-	return result["lowest"], nil
-}
+// 	// Return the lowest price
+// 	return result["lowest"], nil
+// }

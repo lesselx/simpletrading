@@ -3,7 +3,7 @@ package usecase
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"simpletrading/tradeservice/internal/config"
@@ -30,7 +30,7 @@ func (uc *TradeUsecase) PlaceTrade(amount float64) error {
 		return fmt.Errorf("auth failed: %v", err)
 	}
 
-	// Step 2: Request recent data from Data Service with Authorization
+	// Step 2: Request the lowest data from Data Service with Authorization
 	req, err := http.NewRequest("GET", uc.cfg.DataUrl, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %v", err)
@@ -49,46 +49,33 @@ func (uc *TradeUsecase) PlaceTrade(amount float64) error {
 	}
 
 	// Read and log the response body for debugging
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("failed to read response body: %v", err)
 	}
 
 	// Log the raw response body to see what we are getting
 	fmt.Printf("Raw response body: %s\n", respBody)
-
-	// Step 3: Try to decode the response into a struct
-	var data []struct {
-		Value     float64 `json:"value"`
-		Timestamp string  `json:"timestamp"`
-	}
-
-	// Decode the JSON response
-	if err := json.Unmarshal(respBody, &data); err != nil {
+	// Step 3: Unmarshal the response body into a map with the "lowest" key
+	var result map[string]float64
+	if err := json.Unmarshal(respBody, &result); err != nil {
 		return fmt.Errorf("data decode failed: %v", err)
 	}
 
-	// Step 4: Ensure there's some data to process
-	if len(data) == 0 {
-		return fmt.Errorf("no data available")
+	// Extract the lowest value from the map
+	lowest, ok := result["lowest"]
+	if !ok {
+		return fmt.Errorf("missing 'lowest' value in the response")
 	}
 
-	// Step 5: Find the lowest price in the last 24 hours
-	min := data[0].Value
-	for _, d := range data {
-		if d.Value < min {
-			min = d.Value
-		}
-	}
-
-	// Step 6: Validate the trade price
-	if amount < min/2 {
-		return fmt.Errorf("trade price too low; must be at least %.2f", min/2)
+	// Step 4: Validate the trade price (assuming 'min' is predefined)
+	if amount < lowest/2 {
+		return fmt.Errorf("trade price too low; must be at least %.2f", lowest/2)
 	}
 
 	fmt.Printf("Trade accepted: %.2f\n", amount)
 
-	// TODO: Step 7: Save trade in database
+	// TODO: Step 5: Save trade in database
 	// return uc.repo.Insert(&Trade{Amount: amount, Timestamp: time.Now()})
 
 	return nil

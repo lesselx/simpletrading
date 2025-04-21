@@ -64,6 +64,15 @@ JWT_SECRET=super-secret-key
 
 # Database
 DB_PATH=trade.db
+
+# URL
+AUTH_URL = http://localhost:8080/auth/token
+DATA_URL = http://localhost:8081/data
+
+#MACHINE AUTH
+CLIENT_SECRET = myclientsecret
+CLIENT_ID = myclientid
+
 ```
 ### 3. Run each services
 

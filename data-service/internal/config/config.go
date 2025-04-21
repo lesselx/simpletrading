@@ -24,9 +24,26 @@ func Init() (*gorm.DB, *Config) {
 	// Load environment variables and set up DB and OAuth
 	cfg := Load()
 	db := InitDatabase(cfg.DBPath)
+	// SeedDummyData(db) // Seed dummy data
 
 	return db, cfg
 }
+
+// func SeedDummyData(db *gorm.DB) {
+// 	now := time.Now().UTC()
+// 	dummies := []domain.DataPoint{
+// 		{Value: 1200, Timestamp: now.Add(-2 * time.Hour)},
+// 		{Value: 950, Timestamp: now.Add(-3 * time.Hour)},
+// 		{Value: 870, Timestamp: now.Add(-6 * time.Hour)},
+// 		{Value: 600, Timestamp: now.Add(-25 * time.Hour)}, // older than 24h
+// 	}
+
+// 	for _, dp := range dummies {
+// 		if err := db.Create(&dp).Error; err != nil {
+// 			log.Println("Failed to insert dummy datapoint:", dp, err)
+// 		}
+// 	}
+// }
 
 // Load reads the configuration values from environment variables (or defaults).
 func Load() *Config {

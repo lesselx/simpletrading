@@ -22,7 +22,7 @@ func NewHandler(uc *usecase.DataUsecase) *Handler {
 func (h *Handler) Router() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/data", JWTMiddleware(http.HandlerFunc(h.GetData)))
-	mux.Handle("/data/lowest", JWTMiddleware(http.HandlerFunc(h.GetData)))
+	mux.Handle("/data/lowest", JWTMiddleware(http.HandlerFunc(h.GetLowestPrice)))
 	return mux
 }
 

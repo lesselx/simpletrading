@@ -16,7 +16,7 @@ func NewDataRepo(db *gorm.DB) *DataRepository {
 }
 
 func (r *DataRepository) Insert(value float64) error {
-	dp := domain.DataPoint{Value: value}
+	dp := domain.DataPoint{Value: value, Timestamp: time.Now().UTC()}
 	return r.db.Create(&dp).Error
 }
 

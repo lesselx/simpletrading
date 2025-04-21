@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"log"
 	"simpletrading/dataservice/internal/domain"
 	repository "simpletrading/dataservice/internal/repository/memory"
@@ -41,7 +42,7 @@ func (uc *DataUsecase) GetRecentData(limit int) ([]domain.DataPoint, error) {
 
 func (uc *DataUsecase) GetLowestPriceInLast24Hours() (float64, error) {
 	// Filter data by timestamp for the last 24 hours
-	oneDayAgo := time.Now().Add(-24 * time.Hour)
+	oneDayAgo := time.Now().UTC().Add(-24 * time.Hour)
 	data, err := uc.repo.GetDataSince(oneDayAgo)
 	if err != nil {
 		log.Println("Error fetching data:", err)
@@ -49,9 +50,13 @@ func (uc *DataUsecase) GetLowestPriceInLast24Hours() (float64, error) {
 	}
 
 	// Find the lowest price
-	var lowest float64
-	for _, dp := range data {
-		if lowest == 0 || dp.Value < lowest {
+
+	if len(data) == 0 {
+		return 0, errors.New("no data in last 24 hours")
+	}
+	lowest := data[0].Value
+	for _, dp := range data[1:] {
+		if dp.Value < lowest {
 			lowest = dp.Value
 		}
 	}
