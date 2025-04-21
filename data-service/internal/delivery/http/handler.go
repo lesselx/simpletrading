@@ -55,12 +55,16 @@ func (h *Handler) GetData(w http.ResponseWriter, r *http.Request) {
 
 // StartDataGeneration starts a goroutine to generate random data every minute
 func (h *Handler) StartDataGeneration() {
+	// Seed the random number generator once at the start of the application
+	rand.Seed(time.Now().UnixNano())
+
 	go func() {
-		ticker := time.NewTicker(time.Minute)
+		ticker := time.NewTicker(time.Minute) // Generate data every minute
+		defer ticker.Stop()                   // Ensure the ticker is stopped when the function ends
+
 		for {
 			<-ticker.C
-			rand.Seed(time.Now().UnixNano())
-			randomValue := rand.Float64() * 100
+			randomValue := rand.Float64() * 10000 // Generates a random value between 0 and 100,000,000
 			err := h.uc.GenerateData(randomValue)
 			if err != nil {
 				log.Println("Error generating data:", err)
